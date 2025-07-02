@@ -9,8 +9,17 @@
   <body>
     <div id="app">
       <div class="container">
-        <label for="colorPicker">Color</label>
+        <label for="colorPicker">Ambient Light</label>
         <input type="color" id="colorPicker" value="#ff0000" />
+
+        <label for="volumeSlider">Volume</label>
+        <input type="range" id="volumeSlider" min="0" max="30" value="15" />
+        <span id="volumeValue">15</span>
+
+        <input type="text" id="ttsText" placeholder="Say something" />
+        <button id="ttsButton">Speak</button>
+
+        <pre id="log" class="log"></pre>
       </div>
     </div>
     <script type="module" src="/src/main.js"></script>

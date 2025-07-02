@@ -1,6 +1,6 @@
 # MQTT Light Example
 
-A vanilla JavaScript example that connects to your Yoto device via MQTT and allows you to control the ambient light.
+A vanilla JavaScript example that connects to your Yoto device via MQTT and allows you to control your player. It started as a simple ambient light demo and now showcases more MQTT features.
 
 ## Getting Started
 
@@ -54,5 +54,8 @@ This app implements a secure, persistent authentication flow:
 ## Features
 
 - **Color Control**: Change the ambient light color of your Yoto device
+- **Volume Control**: Adjust playback volume via a slider
+- **Text to Speech**: Send a short message for the player to speak
+- **Live Logs**: Status, event and response messages are displayed in real time
 - **MQTT Connection**: Real-time communication with your device
 - **Logout**: Secure logout with token cleanup and MQTT disconnection
