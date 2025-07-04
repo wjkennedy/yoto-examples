@@ -155,6 +155,12 @@ const handleLogout = () => {
 
 const start = async () => {
   const colorPicker = document.querySelector("#colorPicker");
+  const volumeSlider = document.querySelector("#volumeSlider");
+  const volumeValue = document.querySelector("#volumeValue");
+  const ttsText = document.querySelector("#ttsText");
+  const ttsButton = document.querySelector("#ttsButton");
+  const logContainer = document.querySelector("#log");
+
   const debouncedSetLight = debounce(setAmbientLight, 600, { leading: true });
 
   // Handle OAuth callback first
@@ -236,6 +242,22 @@ const start = async () => {
   colorPicker.addEventListener("input", () => {
     const color = colorPicker.value;
     debouncedSetLight(color, deviceId);
+  });
+
+  volumeSlider.addEventListener("input", () => {
+    volumeValue.textContent = volumeSlider.value;
+  });
+
+  volumeSlider.addEventListener("change", () => {
+    setVolume(parseInt(volumeSlider.value, 10), deviceId);
+  });
+
+  ttsButton.addEventListener("click", () => {
+    const text = ttsText.value.trim();
+    if (text) {
+      sendTTS(text, deviceId);
+      ttsText.value = "";
+    }
   });
 
   mqttClient.on("connect", () => {
@@ -335,16 +357,50 @@ function updateStatus() {
 function parseEventsMessage(message) {
   console.log("=== EVENTS MESSAGE ===");
   console.log(message);
+  logMessage("EVENT", message);
 }
 
 function parseStatusMessage(message) {
   console.log("=== STATUS MESSAGE ===");
   console.log(message);
+  logMessage("STATUS", message);
+
+  if (typeof message.volume === "number") {
+    const slider = document.querySelector("#volumeSlider");
+    const display = document.querySelector("#volumeValue");
+    slider.value = message.volume;
+    display.textContent = message.volume;
+  }
 }
 
 function parseResponseMessage(message) {
   console.log("=== RESPONSE MESSAGE ===");
   console.log(message);
+  logMessage("RESPONSE", message);
+}
+
+function setVolume(level, deviceId) {
+  if (!mqttClient) return;
+  const topic = `device/${deviceId}/command/volume`;
+  mqttClient.publish(topic, JSON.stringify({ level }), (err) => {
+    if (err) console.error("Error setting volume:", err);
+  });
+}
+
+function sendTTS(text, deviceId) {
+  if (!mqttClient) return;
+  const topic = `device/${deviceId}/command/tts`;
+  mqttClient.publish(topic, JSON.stringify({ text }), (err) => {
+    if (err) console.error("Error sending TTS:", err);
+  });
+}
+
+function logMessage(type, payload) {
+  const container = document.querySelector("#log");
+  if (!container) return;
+  const line = `[${new Date().toLocaleTimeString()}] ${type}: ${JSON.stringify(payload)}\n`;
+  container.textContent += line;
+  container.scrollTop = container.scrollHeight;
 }
 
 start();
